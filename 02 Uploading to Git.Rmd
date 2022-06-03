@@ -1,0 +1,128 @@
+---
+title: "02 Uploading to Git"
+author: "Bell Wu"
+date: "03/06/2022"
+output: html_document
+---
+
+So now to install Git and upload your things to it...  
+    
+##### installing homebrew  
+  
+First need to install homebrew, but [what is it...](https://opensource.com/article/20/6/homebrew-mac)  
+  
+Homebrew:  
+- = a package manager  
+- to insteall run:  
+`$ /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)`  
+---  
+###### A little about [curl...](https://linuxize.com/post/curl-command-examples/#:~:text=curl%20is%20a%20command%2Dline,SCP%20%2C%20SFTP%20%2C%20and%20FTP%20.)  
+- curl = command-line for transferring data from or to server w/o user interaction; can download or upload data using supported portocols like HTTP, HTTPS, etc.
+- can limit bandwidth, proxy support, user authentication, etc.  
+`curl syntax: curl [options] [URL...]`  
+  
+- **if retrieve example.com homepage then:**  
+`$ curl example.com`  
+- output prints source code of example.com to terminal, no protocol then defaults to HTTP  
+- save result use `-o` or `-0` option
+- `-o` saves file with predified file name (in example is: vue-v2.6.10.js):
+`$ curl -o vue-v2.6.10.js https://cdn.jsdelivr.net/npm/vue/dist/vue.js`  
+- `-0` saves with original filename:  
+`curl -O https://cdn.jsdelivr.net/npm/vue/dist/vue.js`  
+  
+- **if download multiple files:**  
+- use multiple `-0` options followed by URL  
+Example:  
+`-O https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-9.4.0-amd64-netinst.iso`  
+  
+- **resume a download**  
+- use `-C -` option  
+- useful if connection drops and instead of starting from scratch can resume  
+`curl -C - -O http://releases.ubuntu.com/18.04/ubuntu-18.04-live-server-amd64.iso`  
+  
+- **get redirect**  
+`curl -L google.com`  
+- use `-L` option to instruct to redirect to final location  
+  
+- **specify max transfer rate**  
+- `--limit-rate` allows to limie data transfer rate  
+- can express by `k`, `m`, `g` for kilo, mega, or gigabytes  
+  
+---  
+  
+now back to homebrew...  
+  
+- homebrew contains a [list of "formulae"](https://formulae.brew.sh/formula/) that help manage software  
+- to identify if homebrew has commond line can use following:
+```
+$ brew search tldr
+==> Formulae
+tldr ✔
+```  
+  
+- checkmark lets you know you can install it so then type  
+`$ brew install tldr`  
+  
+- can also use: `$ brew uninsall` to remove unused utilities  
+
+- **can manage apps with brew casks**  
+- brew uses the line "cask" for complex multi-directory structures or applications (rather than command lines)  
+- so for example if want to install the application "meld" then:  
+  
+- to first confirm its availability:  
+```
+$ brew search --casks meld
+==> Casks
+meld
+```  
+- once confirmed can used cask sub-command to install:
+`$ brew cask install meld`  
+  
+- **can update everything with brew upgrade**  
+- makes it so not needed to manually keep all programs up to date  
+  
+##### now back to uploading to Git  
+
+###### Basic GitHub setup
+  
+1. First need to instal git via `brew install git`
+2. Create GitHub account
+3. Login to GitHub w new account  
+  
+###### Preparing code for upload  
+  
+Can store code on GitHub repositiry but need to structure code in `index.html`  
+  
+Need to also initialize code directory in repository:  
+  
+1. Point command line to `test-site` directory using `cd`  
+example if website is on desktop:  
+```
+cd Desktop/test-site
+```  
+
+2. When command line is pointing inside website directory, type `git init` to turn into git repository  
+  
+so in my case it would be  
+```
+cd /Users/benson/R_programming/RJourney/
+git init
+```  
+###### Uploading code via command line
+  
+**Using command line is the best way to upload to GitHub**  
+  
+Creating repository for code:
+1. Need to first create repository for files via GitHub website
+2. Simple and follow instructions for creating respository [here](https://developer.mozilla.org/en-US/docs/Learn/Common_questions/Using_Github_pages)  
+  
+###### Uploading files to GitHub  
+
+
+
+
+
+
+
+
+

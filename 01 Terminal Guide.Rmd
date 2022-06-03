@@ -1,0 +1,78 @@
+---
+title: "01 Terminal guide"
+author: "Bell Wu"
+date: "02/06/2022"
+output: html_document
+---
+So...you messed up your path directory from all these previous things you did 
+when you had no idea what you were doing...
+- every command entered into terminal you receive prompt "command not found"
+
+
+To fix the path directory:
+
+First need to understand what the terminal and macOS is doing
+* - resetting PATH involves editing the "shell"  
+  
+***
+##### but first.... what even is UNIX...or an operating system?  
+
+Operating system (OS):
+- low-level software; heart of machine; controls execution of programs and allocation of resources  
+
+UNIX:
+= a type of operating system; suite of programs that make the computer wok
+- developed in 1960s re-writen in 'C' language and named UNICS  
+  
+so with this now...  
+  
+Shell:
+= a computer program which exposes operating system's services to human user...  
+- the operating system's command line interface (CLI) and interpreter for set of commands used to communicate with system  
+
+Shell Script:  
+= text file that contains sequence of commans for UNIX-based operating system  
+- combines sequence of commands into single script (allowing for dif functions)  
+- created for command sequences user has need for  
+
+
+###### how shell scripting works...  
+  
+
+basic steps: 1) writing script, 2) making script accessible to shell, 3) giving shell executive permission  
+
+shell scripts contain:  
+- ASCII text (written in text editor, word processor, graphical user interface)  
+- content of script = series of commands in language that can be interpreted by shell
+  - these include: loops, variables, if/then/else statements, arrays, shortcuts
+   
+file saved in .txt or .sh in location shell can access  
+
+> so from this, my PATH is messed up in a way that this script is no longer being detected by OS shell 
+  
+Types of shells (UNIX/Linux):  
+  
+1. Bourne again shells (BASH)- default shell. Character for prompting is $
+2. C shells= C shell is run in text terminal window able to read file commands. Character for prompting is %.  
+
+***
+
+
+
+
+
+
+##### now back to fixing my PATH
+
+I need to set PATH temporarily such that command terminal can use terminal to navigate directories and edit PATH config file  
+  
+Enter into terminal to set PATH temporarily  
+`export PATH=$PATH:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin`  
+  
+Made new text file that re-directed the current PATH to the block code stated above  
+  
+From this my PATH has now been reset
+
+
+
+
