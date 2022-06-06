@@ -195,7 +195,14 @@ Output should look like this:
 ```
 ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC+ivkH9Q3E0tvfKP7CVGiH8eXiZnKhOqsqWVKTH3meVtaZU/gxUTr1YLOaJcbijtwut3K2Rg31ub40uhhCNTSMg0aC1zk2xWfmFSeY3nJMtB0xoqyYIdPMpKwlLr1oHTOEjea0zVYvHhc4raR2xZ1LDYwW7YeFEzzp1kuMwnMO8c9z/2hxqvxikUIrHeMeGIODZoVq6u2L1q5lMzwihfxGH7jey5d4sxFhv/8InSbz9aoKGhhDNV1WtRlTm0Z6gMx8mIFPNF/SjPkcQTa9OOULe+JkX9NIF4oJCNwDpAAfcYKFAFaMygJGRhW7vaNXfvTkAf1jngeS/i0Bf8U/egPnWzTJVwp6/tk8yAt9f6UYXwd3lbodvcKHvNOf1Bk2TTONeyCQQT9+idtDHbd2u+yyq5MQIh1gvcfF4xu/pZtZmW6pQ/xljeA9W6lJV0Sbnk/3iEpqrdm7HdudoFZIS2L3vXVpzmnowoC9XDxNpU4tYPtoYlUsauX8r+qN1lKcR+8= Bell@MacBook-Pro.local
 ```  
-Now copy the contents to GitHub and paste key in account settings -"Add key"
+Now copy the contents to GitHub and paste key in account settings -"Add key"  
+  
+Next want to authenticate key so go on bash terminal and tpye in:  
+```
+ssh -T git@github.com
+```  
+
+
   
 
   
@@ -205,7 +212,21 @@ Demo:
 `pwd`  
 - by default always listed as home directory  
 `git status`  
-- checks status; to see if we are on master branch, etc.
+- checks status; to see if we are on master branch, and status of files in folder  
+- can see some file names are in red meaning they need to be added  
+`git add .`:  
+- adds all the files that were in red (red -> green)  
+`git commit - "add text for what was done"`  
+- commit files to be ready to be pushed to remote repository  
+`git remote add origin -insert https from github-`  
+- this sets the origin of github to be added  
+`git remote -v`  
+- execute git remote command  
+`git push -u origin master`  
+- push to github
+
+
+
 
 
 
