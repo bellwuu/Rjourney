@@ -6,6 +6,37 @@ output: html_document
 ---
 
 So now to install Git and upload your things to it...  
+
+##### What is a Git respository  
+  
+Git:  
+- version control for tracking changes in computer files; use for coordinating works  
+GitHub:
+- repository hosting service  
+  
+###### Git commands  
+  
+`Git config`:  
+= configure username and email address  
+`Git init`:  
+- initialize local Git repository  
+`Git add`:  
+- add one or more files to staging area  
+`Git diff`:  
+- view channges nade to file  
+`Git commit`:  
+- commit changes to head but not to remote repository  
+`Git rest`:  
+- undo local changes to state of Git repo  
+`Git status`:  
+- displays state of working directory and staging area  
+`Git merge`:  
+- merge branch intoa active branch  
+`Git push`:  
+- upload content from local to remote repository  
+`Git pull`:  
+- fetch and download content from remote repository  
+
     
 ##### installing homebrew  
   
@@ -117,8 +148,64 @@ Creating repository for code:
 2. Simple and follow instructions for creating respository [here](https://developer.mozilla.org/en-US/docs/Learn/Common_questions/Using_Github_pages)  
   
 ###### Uploading files to GitHub  
+  
+1. To push existing repository from command line, need to use code:
+```
+git remote add origin https://github.com/bellwuu/RJourney.git
+```  
+2. Type following commonds and press enter after each one. These prepare code for uploading to GitHub and asks Git to manage these files
+```
+git add --all
+git commit -m 'adding my files to repository'
+```  
+3. Push code to GitHub by going to web page and entering into terminal via:  
+```
+git push -u origin main
+```  
+4. 
+  
+But what is gitpush...?  
+  
+How Github manages data:  
+- project added to local repository to be commit
+- after commit sent to remote via push 
+- need pull to take data from remote repository to local
+  
+Git push:
+= used to push local repository content to remote repository  
+- local repository modified, push is executed to share modificaitons with remote team members  
+  
+*What are SSH keys for GitHub:*  
+SSH keys  
+= alternate forms of identification that does not require username and password  
+- comes in pairs: public key that is shared with services and private key only stored on computer  
+- if keys match then granted access
+  
+[Generating SSH key pair:](https://jdblischak.github.io/2014-09-18-chicago/novice/git/05-sshkeys.html#:~:text=An%20SSH%20key%20is%20an,%2C%20you're%20granted%20access.)
+Use this to look to see if you have an SSH key already; if see `id_rsa.pub` then already have one
+```
+cd ~/.ssh
+ls
+```
+To display content of public key 
+```
+cat ~/.ssh/id_rsa_pub
+```  
+Output should look like this:
+```
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC+ivkH9Q3E0tvfKP7CVGiH8eXiZnKhOqsqWVKTH3meVtaZU/gxUTr1YLOaJcbijtwut3K2Rg31ub40uhhCNTSMg0aC1zk2xWfmFSeY3nJMtB0xoqyYIdPMpKwlLr1oHTOEjea0zVYvHhc4raR2xZ1LDYwW7YeFEzzp1kuMwnMO8c9z/2hxqvxikUIrHeMeGIODZoVq6u2L1q5lMzwihfxGH7jey5d4sxFhv/8InSbz9aoKGhhDNV1WtRlTm0Z6gMx8mIFPNF/SjPkcQTa9OOULe+JkX9NIF4oJCNwDpAAfcYKFAFaMygJGRhW7vaNXfvTkAf1jngeS/i0Bf8U/egPnWzTJVwp6/tk8yAt9f6UYXwd3lbodvcKHvNOf1Bk2TTONeyCQQT9+idtDHbd2u+yyq5MQIh1gvcfF4xu/pZtZmW6pQ/xljeA9W6lJV0Sbnk/3iEpqrdm7HdudoFZIS2L3vXVpzmnowoC9XDxNpU4tYPtoYlUsauX8r+qN1lKcR+8= Bell@MacBook-Pro.local
+```  
+Now copy the contents to GitHub and paste key in account settings -"Add key"
+  
 
-
+  
+Demo:  
+`git config --list`  
+= lists configuration of git  
+`pwd`  
+- by default always listed as home directory  
+`git status`  
+- checks status; to see if we are on master branch, etc.
 
 
 
