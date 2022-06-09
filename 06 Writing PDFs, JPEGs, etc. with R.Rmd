@@ -1,0 +1,7 @@
+---
+title: "06 Writing PDFs, JPEGs, etc. with R"
+author: "Bell Wu"
+date: '2022-06-09'
+output: html_document
+---
+

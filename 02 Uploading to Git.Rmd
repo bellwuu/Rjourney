@@ -216,7 +216,7 @@ Demo:
 - can see some file names are in red meaning they need to be added  
 `git add .`:  
 - adds all the files that were in red (red -> green)  
-`git commit - "add text for what was done"`  
+`git commit -am "add text for what was done"`  
 - commit files to be ready to be pushed to remote repository  
 `git remote add origin -insert https from github-`  
 - this sets the origin of github to be added  

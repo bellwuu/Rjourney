@@ -1,0 +1,68 @@
+---
+title: "04 For loops in R"
+author: "Bell Wu"
+date: '2022-06-07'
+output: html_document
+---
+  
+#### For loops  
+  
+For loops are important as they are used to iterate over a vector  
+  
+##### Syntax of for loop:
+> for (val in sequence)  
+> {  
+> statement  
+> }  
+
+- `sequence` is vector
+- `val` takes on each of its value during loop
+- `statement` is evaluated in each iteration  
+  
+Example (how for loops work):  
+```{r}
+for (x in 1:10){
+  print(x)
+}
+```
+- note how each individual number of vector from 1-10 is printed  
+- for works  like an iterator method 
+  
+(cont'd):
+```{r}
+fruits <- list("apple", "banana", "cherry")
+for (x in fruits){
+  print(x)
+}
+```  
+- this can also be done using characters 
+*note that for does not require indexing variable to be set beforehand (unlike while loops)*
+  
+Example (adding `Break` into statement):
+```{r}
+fruits <- list("apple", "banana", "cherry", "orange")
+
+for (x in fruits) {
+  if (x == "cherry") {
+    break
+  }
+  print(x)
+}
+```
+- note that loop stops printing at cherry since we chose to finish the loop (via break) when x is cherry 
+  
+  
+Example (count number of even numbers in vector):  
+```{r}
+x <- sample.int(50, 10)
+count <- 0
+for (val in x){
+  if(val %% 2 == 0)
+    count = count + 1
+}
+print(count)
+```
+
+
+
+

@@ -1,0 +1,62 @@
+---
+title: "05 Generating colour palettes"
+author: "Bell Wu"
+date: '2022-06-09'
+output: html_document
+---
+##### [Generating colour palettes:](https://bookdown.org/rdpeng/exdata/plotting-and-color-in-r.html)
+  
+###### brewer.pal()  
+Usage: `brewer.pal(n, name)`  
+- n = number of differnt colours in palette, min 3 and max depending on palette
+- name = a palette name from lists  
+Details:  
+- `display.brewer.pal(n, name)`  
+- displays selected palette in graphics window  
+- `display.brewer.all()`:  
+- displays few palettes simultaneously in graphics window 
+- `brewer.pal.info`:  
+- returns information about available palettes as data frame; this is a variable  
+  
+###### colorRampPalette:
+Usage: `colorRampPalette(palett, bias = 1, method = c("spline", "linear"))`  
+- palette = a vector of colours  
+- bias = bias > 1 puts more colours at high values
+- method = interpolation method. 
+*Explanation and use of function:*  
+- colorRamp()
+```{r}
+pal <- colorRamp(c("red", "blue"))
+pal(0)
+
+pal(0.5) # can pass any value between 0 and 1 to pal() function
+
+pal(seq(0, 1, len = 10)) # can also pass sequence of numbers to pal() function
+```
+- pal is function returned by colorRamp()
+- pal(0) returns 1x3 matrix: range 0-255 indicate quantities of red in RGB columns 1, 2, 3
+- colorRamp() gives function that can interpolate between multiple colours
+  
+- colorRampPalette()
+```{r}
+pal <- colorRampPalette(c("red", "yellow"))
+pal(2) # just returns two colors: yellow and red
+
+
+```
+- similar to colorRamp but gives FIXED number of colours that interpolate palette
+- colours returned represented by hexadecimal strings
+
+###### RColorBrewer package  
+Package components:  
+- offers three types of palettes: 
+  - sequential: ordered numerical data
+  - diverging: numerical data that can be positive or negative, represnt deviatiosn from some norm or baseline
+  - qualitative: for qualitative unordered data
+
+
+
+
+
+
+

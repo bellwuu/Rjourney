@@ -1,0 +1,370 @@
+---
+title: "07 George Dataset Subtyping"
+author: "Bell Wu"
+date: '2022-06-06'
+output: html_document
+---
+
+First need to write function to pull genes
+```{r}
+setwd("/Users/benson/R_programming/R_hmap_test")
+George <- read.csv("George_nodup.csv")
+head(George)
+rownames(George) <- George$X
+George <- George[ , -1]
+```
+
+##### important functions:
+
+###### max.col:
+- finds maximum position for *each row* of a mtarix, breaking ties at random
+`max.col(m, ties.method = c("random", "first", "last"))`
+  - m = numerical matrix
+  - ties.method = character string specifying how ties are handled, "random" by default
+  - returns index of maximum value for each row, an integer vector of length nrow(m)
+  
+###### max and min:
+- returns (regular or parallel) maxima and minima of input values  
+`max(..., na.rm = FALSE)`  
+  - ... = numeric or character arguments  
+  - na.rm = logical indicating whether missing values should be removed  
+*Details*:  
+- return max or min of all values present in arguments:
+  - as integer (logical or integer)
+  - as double if all are numeric  
+`pmax and pmin`:  
+- take one or more vectors (or matrices) as arguments
+- return single vector giving "parallel" maxima of vectors
+Example:  
+```{r}
+testG <- George[ , c(1:3)]
+markerGene = c("ASCL1", "NEUROD1", "YAP1", "POU2F3")
+testG_m <- subset(testG, subset = rownames(testG) %in% markerGene )
+pmax(testG_m[ , 1], testG_m[ , 2])
+# output: 975.988000   4.861290   0.128793   1.495010
+```
+- returns the max between the rows of matrices (or columns)  
+  
+###### which.max():  
+- determines location (index) of first min or max of numerical or logical vector 
+*SYNTAX:* `which.max(dataframe_name$columnname)`  
+  
+###### rownames(x)[i]  
+- x = dataframe, i = number for index
+- will give the rowname from dataframe based on the integer value used to index
+  
+Now to write the function...  
+##### Function for pulling highest gene count
+```{r}
+
+mGenes = c("ASCL1", "NEUROD1", "YAP1", "POU2F3")
+
+subtypeData <- function(counts, markerGene) { # create function for counts and genes of interest
+  mcounts <- subset(counts, subset = rownames(counts) %in% markerGene ) # make matrix of markers of interest
+  r_index <- sapply(mcounts, which.max) # use sapply to find highest max value from marker genes
+  hgenes <- rownames(mcounts)[r_index] # use rownames to index the name of gene that is highest
+  scounts <- rbind.data.frame(hgenes, counts) # generate dataframe by binding the rows from each "matrix"
+  return(scounts)
+}
+
+sGeorge <- subtypeData(counts = George, markerGene = mGenes)
+```
+  
+##### Identify subtype distribution in George dataset
+```{r}
+## to count how many subtypes in this dataset
+subtypes <- sGeorge[1, ]
+rownames(subtypes) = "subtype"
+
+occurences <- table(unlist(subtypes)) # unlist dataframe to character vector, use table() to count occurences
+as.matrix(occurences)
+
+# plot a pie chart from the different subtypes
+slices <- occurences
+lbls <- rownames(occurences)
+percent <- round(slices/sum(slices) * 100)
+lbls <- paste(lbls, percent)
+lbls <- paste(lbls, "%", sep = " ") # add % to the labels
+
+library(RColorBrewer)
+pcolour <- colorRampPalette(brewer.pal(4, "Set1"))(4)
+
+George.pie <- pie(slices, labels = lbls, col = pcolour, main = "Subtype Distribution of George dataset")
+
+setwd("/Users/benson/R_programming")
+dev.new()
+pdf("George_subtype_distribution(2).pdf", width = 4, height = 4)
+pie(slices, labels = lbls, col = pcolour, main = "Subtype Distribution of George dataset")
+dev.off()
+```
+##### Helpful functions:
+
+###### names():
+- Functions to get or set the names of an object
+
+  
+###### dplyr::count()
+- quickly count unique values of one or more variables
+`df %>% count (a,b)`
+
+###### table():  
+```
+table(...,
+      exclude = if (useNA == "no") c(NA, NaN),
+      useNA = c("no", "ifany", "always"),
+      dnn = list.names(...), deparse.level = 1)
+```
+- builds contingency table of counts at each combination of fators  
+- ... = one or more objects which can be interpreted as factors, or list whose components can be interpreted  
+  
+###### paste()  
+- concatenante vectors after converting to character
+`paste(..., sep = " ", collapse = NULL, recycle0 = FALSE)`
+- ... = one or more R objects, to be converted to character vectors
+- sep = character string to separate terms
+- collapse = optional character string to separate the results
+  
+  
+Now to generate a heatmap from this:
+  
+need libraries:
+- [pheatmap](https://www.rdocumentation.org/packages/pheatmap/versions/1.0.12/topics/pheatmap)
+  
+###### To test out scaling functions when generating heatmap:
+```{r}
+htestG <- George[c(1:10), c(1:3)] # take only first 10 rows since code runs long if not
+# pheatmap(htestG) # testing pheatmap function
+
+# also want to test out scaling factors to calculate zscores 
+cal_z_score_1 <- function(x){ # plot in blue
+(x - mean(x)) / sd(x)
+}
+
+cal_z_score_2 <- function(x){ # plot in red
+  t(scale(t(log2(1+x))))
+}
+
+z1_testG <- t(apply(htestG, 1, cal_z_score_1))
+z2_testG <- cal_z_score_2(htestG)
+# now have the scaled data, plot density plots to see distribution
+d1 <- density(z1_testG[ , 1]) # returns density data
+d2 <- density(z2_testG[ , 1])
+plot(d1, xlab = "z-scaled counts of patient S00022", # plot density of plot 1st function "d1"
+     ylab = "Density",
+     main = "Comparison between scaling functions and raw data",
+     col = "red") 
+
+lines(d2, col = "blue") # lines will add to exiting plot but not make new one
+
+legend("topright", legend = c("scaled 1", "scaled 2"), 
+       col = c("red", "blue"),
+       lty = "solid")
+# blue distribution looks cleaner; to test out on heatmap to see scaling
+```
+  
+###### Now to test scaling function on heatmap distribution
+```{r}
+hcolour <- colorRampPalette(brewer.pal(8, "RdBu"))(100) # generate colour panel
+
+test_count <- sGeorge
+test_count <- as.matrix(count[-1, ])
+mode(test_count) = "numeric"
+geneSet <- c("CD63", "CD163")
+
+cal_z_score_1 <- function(x){ # plot in blue
+(x - mean(x)) / sd(x)
+}
+
+#scaling with cal_z_score_1
+z1_testG <- t(apply(test_count, 1, cal_z_score_1)) # scale counts to center
+hmap1 <- subset(z1_testG, subset = rownames(z1_testG) %in% geneSet) # take out genes to analyze from zcounts
+
+hmat1 <-  pheatmap(hmap1)
+
+#scaling with cal_z_score_2
+z2_testG <-t(scale(t(log2(1 + test_count)))) # scale counts to center
+hmap2 <- subset(z2_testG, subset = rownames(z2_testG) %in% geneSet) # take out genes to analyze from zcounts
+
+hmat2 <-  pheatmap(hmap2)
+
+# scaling function 2 scales better on heatmap thus use this
+
+```
+  
+###### To clean up data to generate heatmap (adding column annotations:
+```{r}
+conditions <- sGeorge[1, ]
+
+sGeorge_clean <- sGeorge[-1 ,]
+sGeorge_clean <- as.matrix(sGeorge_clean) # convert to matrix
+mode(sGeorge_clean) = "numeric" # convert to numeric
+counts <- sGeorge_clean
+```
+  
+##### Writing the heatmap function
+```{r}
+library(pheatmap)
+library(RColorBrewer)
+
+
+# counts need to be numerical matrix
+
+makeHeatmapGS <- function(counts, conditions, geneSet, title = "George Macrophage Polarization", 
+                          showRow = T, c_rows = T, c_cols = T, sc = "none") {
+  hcolour <- colorRampPalette(brewer.pal(8, "RdBu"))(100) # generate colour panel
+  
+  zcounts <- t(scale(t(log2(1 + counts))))  # scale counts to center
+  hmap <- subset(zcounts, subset = rownames(zcounts) %in% geneSet) # take out genes to analyze from zcounts
+  conditions <- as.character(conditions)
+  col_cuts <- length(unique(conditions))
+  ann_col <- data.frame("subtype" = conditions, row.names = colnames(counts)) 
+  # row.names(ann_col) <- colnames(counts)
+  # write heatmap parameters
+  hmat <-  pheatmap(hmap, color=rev(hcolour), cluster_rows= c_rows, cluster_cols= c_cols, legend=T,
+           show_rownames=showRow, annotation_col=ann_col, show_colnames=T,
+           main=title, scale = sc,
+           cutree_cols = col_cuts,
+           breaks=seq(from=-max(abs(hmap)), to=max(abs(hmap)), length.out=100))
+    return(hmat)
+}
+
+Macrophage_1 <- c("CD163", "CD63")
+GMA <- makeHeatmapGS(counts = counts, conditions = conditions, geneSet = Macrophage_1)
+
+setwd("/Users/benson/R_programming/RJourney")
+pdf(file = "SCLC.George_macrophageCD163CD63.pdf", width = 15, height = 5)
+grid::grid.newpage()
+grid::grid.draw(GMA$gtable)
+dev.off()
+```
+  
+##### Testing out different genesets...
+  
+```{r}
+
+M2genes <- c("MRC1", "CCL22", "FCER2", "ARG1", "CD163", "VEGF", "MSR1")
+
+                
+GMA <- makeHeatmapGS(counts = counts, conditions = conditions, geneSet = mGenes, c_rows = T,
+                     sc = "none")
+setwd("/Users/benson/R_programming/RJourney")
+pdf(file = "SCLC.George_subtypes.pdf", width = 15, height = 5)
+grid::grid.newpage()
+grid::grid.draw(GMA$gtable)
+dev.off()
+```
+  
+##### Testing out the new markergene function  
+```{r}
+
+# heatmap needs to have marker genes for subtype added...
+
+makeHeatmapMG <- function(counts, conditions, markerGenes, geneSet,
+                        c_rows = T, c_cols = T, sc = "none",  
+                        title = "George Macrophage Polarization", showRow = T) {
+  hcolour <- colorRampPalette(brewer.pal(8, "RdBu"))(100) # generate colour panel
+  zcounts <- t(scale(t(log2(1 + counts))))  # scale counts to center
+  # make null matrices to subset genesets from markers and genes of interest  
+  mg <- NULL
+  gs <- NULL
+  
+  mg <- subset(zcounts, subset = rownames(zcounts) %in% markerGenes) # take out marker genes from zcounts
+  gs <- subset(zcounts, subset = rownames(zcounts) %in% geneSet) # take out genes to analyze from zcounts
+  mg <- as.matrix(mg)
+  gs <- as.matrix(gs)
+  hmap <- rbind(mg, gs)
+  
+  
+  conditions <- as.character(conditions)
+  col_cuts <- length(unique(conditions))
+  row_gaps <- length(markerGenes)
+  ann_col <- data.frame("subtype" = conditions, row.names = colnames(counts)) 
+  # row.names(ann_col) <- colnames(counts)
+  # write heatmap parameters
+  
+  hmat <-  pheatmap(hmap, color=rev(hcolour), cluster_rows=F, cluster_cols=T, legend=T,
+           show_rownames=showRow, annotation_col=ann_col, show_colnames=T,
+           main=title, 
+           cutree_cols = col_cuts, gaps_row = row_gaps, 
+           breaks=seq(from=-max(abs(hmap)), to=max(abs(hmap)), length.out=100))
+    return(hmat)
+}
+
+mGenes = c("ASCL1", "YAP1", "NEUROD1", "POU2F3")
+geneSet <- c("CD63", "CD163")
+
+GMA <- makeHeatmapMG(counts = counts, conditions = conditions, markerGenes = mGenes, geneSet = macrophage)
+
+pdf(file = "SCLC.George.4Subtypes_mall.pdf", width = 15, height = 5)
+grid::grid.newpage()
+grid::grid.draw(GMA$gtable)
+dev.off()
+
+# works well! now see if I can split further between M1 and M2 macrophages
+```
+  
+###### Spliting clustering further between M1 and M2 macrophges
+
+```{r}
+
+
+makeHeatmap2GS <- function(counts, conditions, markerGenes, geneSet1, geneSet2,
+                        title = "George Macrophage Polarization", showRow = T, showCol = T,
+                        c_rows = T, c_cols = T, sc = "none") {
+  hcolour <- colorRampPalette(brewer.pal(8, "RdBu"))(100) # generate colour panel
+  zcounts <- t(scale(t(log2(1 + counts))))  # scale counts to center
+  # make null matrices to subset genesets from markers and genes of interest  
+  mg <- NULL
+  gs <- NULL
+  
+  mg <- subset(zcounts, subset = rownames(zcounts) %in% markerGenes) # take out marker genes from zcounts
+  gs1 <- subset(zcounts, subset = rownames(zcounts) %in% geneSet1) # take out genes to analyze from zcounts
+  gs2 <- subset(zcounts, subset = rownames(zcounts) %in% geneSet2)
+  mg <- as.matrix(mg)
+  gs1 <- as.matrix(gs1)
+  gs2 <- as.matrix(gs2)
+  hmap <- rbind(mg, gs1, gs2)
+  
+  
+  conditions <- as.character(conditions)
+  col_cuts <- length(unique(conditions))
+  row_gaps <- c(length(markerGenes), (length(markerGenes) + length(geneSet1)))
+  ann_col <- data.frame("subtype" = conditions, row.names = colnames(counts)) 
+  # row.names(ann_col) <- colnames(counts)
+  # write heatmap parameters
+  
+  hmat <-  pheatmap(hmap, color=rev(hcolour), cluster_rows=c_rows, cluster_cols=c_cols, legend=T,
+           show_rownames=showRow, annotation_col=ann_col, show_colnames=showCol,
+           main= title, 
+           cutree_cols = col_cuts, gaps_row = row_gaps, 
+           breaks=seq(from=-max(abs(hmap)), to=max(abs(hmap)), length.out=100))
+    return(hmat)
+}
+
+M1genes <- c("IL6", "IL1B", "TNF")
+M2genes <- c("MRC1", "CCL22", "FCER2", "ARG1", "MSR1")
+
+GMA <- makeHeatmap2GS(counts = counts, conditions = conditions, markerGenes = mGenes, geneSet1 = M1genes,
+               geneSet2 = M2genes, title = "George Subtype M1 and M2 expression", c_rows = F, showCol = F,
+               sc = "column")
+
+pdf(file = "SCLC.George.4Subtypes_M1M2.pdf", width = 15, height = 5)
+grid::grid.newpage()
+grid::grid.draw(GMA$gtable)
+dev.off()
+
+```
+
+###### data.frame():  
+- creates data frames  
+`data.frame(…, row.names = NULL, check.rows = FALSE, check.names = TRUE, fix.empty.names = TRUE, stringsAsFactors = default.stringsAsFactors())`
+- ... arguments either form value or tag = value. Component names created based on tag
+- row.names `NULL` or single integer or character string specifiying a column to be used as row names: gives row names of dataframe  
+  
+##### Conclusions:  
+- from dataset, does not seem specific subtype associates with macrophage polarization, or if there is, it is difficult to discern due to low n of SCLC-P, SCLC-Y subtypes
+
+
+
+
+a
